@@ -95,14 +95,15 @@ export default function DiaperLog({ currentUser, darkMode }) {
     },
   };
 
-  // 💩 うんちの色オプション
+  // 💩 うんちの色オプション(白・赤は要注意マーク付き)
   const poopColors = [
-    { value: "黄色", emoji: "🟡", desc: "黄色" },
-    { value: "茶色", emoji: "🟤", desc: "茶色" },
-    { value: "濃い茶色", emoji: "🌰", desc: "濃い茶色" },
-    { value: "緑っぽい", emoji: "🟢", desc: "緑っぽい" },
-    { value: "黒い", emoji: "⚫", desc: "黒い" },
-    { value: "赤い", emoji: "🔴", desc: "赤い⚠️" },
+    { value: "黄色", emoji: "🟡", desc: "黄色", alert: false },
+    { value: "茶色", emoji: "🟤", desc: "茶色", alert: false },
+    { value: "濃い茶色", emoji: "🌰", desc: "濃い茶色", alert: false },
+    { value: "緑っぽい", emoji: "🟢", desc: "緑っぽい", alert: false },
+    { value: "黒い", emoji: "⚫", desc: "黒い", alert: false },
+    { value: "赤い", emoji: "🔴", desc: "赤い⚠️", alert: true },
+    { value: "白い", emoji: "⚪", desc: "白い⚠️", alert: true },
   ];
 
   // 💩 うんちの柔らかさオプション
@@ -194,28 +195,24 @@ export default function DiaperLog({ currentUser, darkMode }) {
                 💩 色
               </label>
               <div className="grid grid-cols-3 gap-1.5">
-                {poopColors.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() =>
-                      updateLogDetail(
-                        log.id,
-                        "poopColor",
-                        log.poopColor === opt.value ? "" : opt.value
-                      )
-                    }
-                    className={`px-2 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      log.poopColor === opt.value
-                        ? "bg-gradient-to-r from-orange-300 to-amber-400 text-white shadow-sm"
-                        : darkMode
-                        ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    <span className="text-base mr-1">{opt.emoji}</span>
-                    {opt.desc}
-                  </button>
-                ))}
+{poopColors.map((opt) => (
+  <button
+    key={opt.value}
+    onClick={() => updateLogDetail(log.id, "poopColor", log.poopColor === opt.value ? "" : opt.value)}
+    className={`px-2 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+      log.poopColor === opt.value
+        ? (opt.alert
+            ? "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md ring-2 ring-red-300 animate-pulse"
+            : "bg-gradient-to-r from-orange-300 to-amber-400 text-white shadow-sm")
+        : (opt.alert
+            ? (darkMode ? "bg-red-900/40 text-red-300 border-2 border-red-700 hover:bg-red-900/60" : "bg-red-50 text-red-700 border-2 border-red-300 hover:bg-red-100")
+            : (darkMode ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-700 hover:bg-gray-200"))
+    }`}
+  >
+    <span className="text-base mr-1">{opt.emoji}</span>
+    {opt.desc}
+  </button>
+))}
               </div>
             </div>
 
