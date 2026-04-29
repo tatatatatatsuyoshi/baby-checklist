@@ -52,6 +52,8 @@ export default function App() {
 
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  // ⏳ ローディング状態(初回データ取得中)
+  const [isLoading, setIsLoading] = useState(true);
 
   const [newItemName, setNewItemName] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("");
@@ -100,6 +102,8 @@ export default function App() {
         ...docSnap.data(),
       }));
       setItems(firestoreItems);
+      // ⏳ 最初のデータ取得完了→ローディング解除
+      setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -477,6 +481,25 @@ export default function App() {
     filterCategory !== "すべて" ||
     filterPriority !== "すべて";
 
+  // ⏳ ローディング画面(初回データ取得中)
+  if (isLoading && currentUser) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${darkMode ? "bg-gray-900" : "bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50"}`}>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce">👶</div>
+          <p className={`text-sm font-semibold ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+            赤ちゃんを呼んでいます...
+          </p>
+          <div className="mt-4 flex justify-center gap-1">
+            <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (!currentUser) {
     return <UserSelect onSelect={handleUserSelect} />;
   }
