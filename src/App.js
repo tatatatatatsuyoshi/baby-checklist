@@ -498,7 +498,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen ${bgClass} py-6 px-4 pb-40 font-sans transition-colors duration-300`}
+      className={`min-h-screen ${bgClass} py-6 px-4 pb-24 font-sans transition-colors duration-300`}
     >
       <Confetti show={confetti.show} x={confetti.x} y={confetti.y} />
 
@@ -1277,15 +1277,9 @@ export default function App() {
         )}
       </div>
 
-      {/* 📱 ボトムナビ(スマホでは浮遊式、PCでは画面下に固定) */}
-      <nav
-        className={`fixed border shadow-lg z-50 ${
-          darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-        }
-  bottom-0 left-0 right-0 sm:bottom-0
-  max-sm:bottom-20 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:max-w-[380px] max-sm:rounded-full max-sm:right-auto`}
-      >
-        <div className="grid grid-cols-3">
+{/* 📱 ボトムナビ(スマホでは画面下フル幅、PCでは中央寄せ固定) */}
+<nav className={`fixed bottom-0 left-0 right-0 border-t shadow-lg z-50 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+        <div className="grid grid-cols-3 max-w-md mx-auto">
           <button
             onClick={() => setCurrentPage("checklist")}
             className={`py-3 px-2 flex flex-col items-center gap-0.5 transition-all rounded-l-full ${
