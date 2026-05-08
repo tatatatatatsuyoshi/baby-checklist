@@ -19,6 +19,7 @@ import UserSelect from "./UserSelect";
 import DiaperLog from "./DiaperLog";
 import EmergencyContacts from "./EmergencyContacts";
 import LaborTimer from "./LaborTimer";
+import Notes from "./Notes";
 import Confetti from "./Confetti";
 
 export default function App() {
@@ -33,7 +34,6 @@ export default function App() {
 
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  // ⏳ ローディング状態
   const [isLoading, setIsLoading] = useState(true);
 
   const [newItemName, setNewItemName] = useState("");
@@ -297,7 +297,6 @@ export default function App() {
     return <UserSelect onSelect={handleUserSelect} />;
   }
 
-  // ⏳ ローディング画面
   if (isLoading && currentUser) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${darkMode ? "bg-gray-900" : "bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50"}`}>
@@ -865,54 +864,66 @@ export default function App() {
         {currentPage === "diaper" && <DiaperLog currentUser={currentUser} darkMode={darkMode} />}
         {currentPage === "contacts" && <EmergencyContacts darkMode={darkMode} />}
         {currentPage === "labor" && <LaborTimer currentUser={currentUser} darkMode={darkMode} />}
+        {currentPage === "notes" && <Notes currentUser={currentUser} darkMode={darkMode} />}
       </div>
 
-      {/* 📱 ボトムナビ(4タブに!) */}
+      {/* 📱 ボトムナビ(5タブ!) */}
       <nav className={`fixed bottom-0 left-0 right-0 border-t shadow-lg z-50 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
-        <div className="grid grid-cols-4 max-w-md mx-auto">
+        <div className="grid grid-cols-5 max-w-md mx-auto">
           <button
             onClick={() => setCurrentPage("checklist")}
-            className={`py-3 px-1 flex flex-col items-center gap-1 transition-all ${
+            className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
               currentPage === "checklist"
                 ? (darkMode ? "text-pink-400 bg-gray-700" : "text-pink-500 bg-pink-50")
                 : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
             }`}
           >
             <ListChecks className="w-5 h-5" />
-            <span className="text-xs font-semibold">準備</span>
+            <span className="text-[10px] font-semibold">準備</span>
           </button>
           <button
             onClick={() => setCurrentPage("diaper")}
-            className={`py-3 px-1 flex flex-col items-center gap-1 transition-all ${
+            className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
               currentPage === "diaper"
                 ? (darkMode ? "text-purple-400 bg-gray-700" : "text-purple-500 bg-purple-50")
                 : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
             }`}
           >
             <Droplet className="w-5 h-5" />
-            <span className="text-xs font-semibold">おむつ</span>
+            <span className="text-[10px] font-semibold">おむつ</span>
           </button>
           <button
             onClick={() => setCurrentPage("labor")}
-            className={`py-3 px-1 flex flex-col items-center gap-1 transition-all ${
+            className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
               currentPage === "labor"
                 ? (darkMode ? "text-rose-400 bg-gray-700" : "text-rose-500 bg-rose-50")
                 : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
             }`}
           >
             <Activity className="w-5 h-5" />
-            <span className="text-xs font-semibold">陣痛</span>
+            <span className="text-[10px] font-semibold">陣痛</span>
           </button>
           <button
-            onClick={() => setCurrentPage("contacts")}
-            className={`py-3 px-1 flex flex-col items-center gap-1 transition-all ${
-              currentPage === "contacts"
+            onClick={() => setCurrentPage("notes")}
+            className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
+              currentPage === "notes"
                 ? (darkMode ? "text-amber-400 bg-gray-700" : "text-amber-500 bg-amber-50")
                 : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
             }`}
           >
+            <StickyNote className="w-5 h-5" />
+            <span className="text-[10px] font-semibold">メモ</span>
+          </button>
+          <button
+            onClick={() => setCurrentPage("contacts")}
+            className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
+              currentPage === "contacts"
+                ? (darkMode ? "text-blue-400 bg-gray-700" : "text-blue-500 bg-blue-50")
+                : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
+            }`}
+          >
             <Phone className="w-5 h-5" />
-            <span className="text-xs font-semibold">連絡先</span>
+            <span className="text-[10px] font-semibold">連絡先</span>
           </button>
         </div>
       </nav>
