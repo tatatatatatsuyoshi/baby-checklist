@@ -199,7 +199,7 @@ export default function Growth({ currentUser, darkMode }) {
               type="date"
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "border-gray-200"}`}
+              className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-purple-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "border-gray-200"}`}
             />
           </div>
           <div className="grid grid-cols-3 gap-2">

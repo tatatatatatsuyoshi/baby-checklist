@@ -149,12 +149,12 @@ export default function Temperature({ currentUser, darkMode }) {
           </div>
           <div>
             <label className={`text-xs block mb-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>測定日時</label>
-            <input
-              type="datetime-local"
-              value={newDateTime}
-              onChange={(e) => setNewDateTime(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-rose-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "border-gray-200"}`}
-            />
+          <input
+            type="datetime-local"
+            value={newDateTime}
+            onChange={(e) => setNewDateTime(e.target.value)}
+            className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-rose-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "border-gray-200"}`}
+          />
           </div>
           <div>
             <label className={`text-xs block mb-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>メモ(任意)</label>
