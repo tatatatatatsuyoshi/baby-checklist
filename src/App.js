@@ -7,7 +7,7 @@ import {
   Link2, StickyNote, Tag, UserCircle, X,
   Search, Wallet, FolderPlus,
   ListChecks, Droplet, Phone, Sun, Moon, Activity,
-  Menu, Thermometer, Ruler, Syringe,
+  Menu, Thermometer, Ruler, Syringe, ClipboardList,
 } from "lucide-react";
 
 import { db } from "./firebase";
@@ -24,20 +24,19 @@ import Notes from "./Notes";
 import Temperature from "./Temperature";
 import Growth from "./Growth";
 import Vaccination from "./Vaccination";
+import Procedures from "./Procedures";
 import Confetti from "./Confetti";
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(
     localStorage.getItem("currentUser")
   );
-  // 🎯 初期ページを「体温」に
-  const [currentPage, setCurrentPage] = useState("temperature");
+  // 🎯 初期ページを「手続き」に
+  const [currentPage, setCurrentPage] = useState("procedures");
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("darkMode") === "true"
   );
   const [confetti, setConfetti] = useState({ show: false, x: 0, y: 0 });
-
-  // ☰ ハンバーガーメニュー
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [items, setItems] = useState([]);
@@ -83,7 +82,6 @@ export default function App() {
     }
   };
 
-  // ☰ メニューからページ遷移
   const navigateTo = (page) => {
     setCurrentPage(page);
     setMenuOpen(false);
@@ -328,12 +326,13 @@ export default function App() {
     ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-500"
     : "border-gray-200";
 
-  // 📋 メニューの項目定義
+  // 📋 メニューの項目定義(体温も追加!)
   const menuItems = [
-    { id: "contacts",  emoji: "📞", label: "緊急連絡先",         icon: Phone },
-    { id: "checklist", emoji: "📋", label: "出産準備リスト",      icon: ListChecks },
-    { id: "diaper",    emoji: "💧", label: "おむつ記録",         icon: Droplet },
-    { id: "labor",     emoji: "🚨", label: "陣痛タイマー",        icon: Activity },
+    { id: "temperature", emoji: "🌡️", label: "体温記録",        icon: Thermometer },
+    { id: "contacts",    emoji: "📞", label: "緊急連絡先",      icon: Phone },
+    { id: "checklist",   emoji: "📋", label: "出産準備リスト",   icon: ListChecks },
+    { id: "diaper",      emoji: "💧", label: "おむつ記録",       icon: Droplet },
+    { id: "labor",       emoji: "🚨", label: "陣痛タイマー",     icon: Activity },
   ];
 
   return (
@@ -341,7 +340,7 @@ export default function App() {
       <Confetti show={confetti.show} x={confetti.x} y={confetti.y} />
 
       <div className="max-w-md mx-auto">
-        {/* 🔝 上部バー(ダークモード・ユーザー・メニュー) */}
+        {/* 🔝 上部バー */}
         <div className="flex justify-between items-center mb-2">
           <button
             onClick={toggleDarkMode}
@@ -366,10 +365,11 @@ export default function App() {
         </div>
 
         {/* 📋 ページ本体 */}
-        {currentPage === "temperature" && <Temperature currentUser={currentUser} darkMode={darkMode} />}
+        {currentPage === "procedures"  && <Procedures  currentUser={currentUser} darkMode={darkMode} />}
         {currentPage === "growth"      && <Growth      currentUser={currentUser} darkMode={darkMode} />}
         {currentPage === "vaccination" && <Vaccination currentUser={currentUser} darkMode={darkMode} dueDate={dueDate} />}
         {currentPage === "notes"       && <Notes       currentUser={currentUser} darkMode={darkMode} />}
+        {currentPage === "temperature" && <Temperature currentUser={currentUser} darkMode={darkMode} />}
         {currentPage === "diaper"      && <DiaperLog   currentUser={currentUser} darkMode={darkMode} />}
         {currentPage === "contacts"    && <EmergencyContacts                    darkMode={darkMode} />}
         {currentPage === "labor"       && <LaborTimer  currentUser={currentUser} darkMode={darkMode} />}
@@ -393,37 +393,26 @@ export default function App() {
                     daysUntilDue > 0 ? (
                       <span className={`text-sm ${textSecondary}`}>
                         🌷 出産予定日まで
-                        <span className="text-xl font-bold text-pink-500 mx-1">
-                          あと {daysUntilDue}
-                        </span>
-                        日
+                        <span className="text-xl font-bold text-pink-500 mx-1">あと {daysUntilDue}</span>日
                       </span>
                     ) : daysUntilDue === 0 ? (
-                      <span className="text-sm font-bold text-pink-500">
-                        🎉 今日が予定日です！
-                      </span>
+                      <span className="text-sm font-bold text-pink-500">🎉 今日が予定日です！</span>
                     ) : (
-                      <span className={`text-sm ${textSecondary}`}>
-                        🍼 予定日から {Math.abs(daysUntilDue)} 日経過
-                      </span>
+                      <span className={`text-sm ${textSecondary}`}>🍼 予定日から {Math.abs(daysUntilDue)} 日経過</span>
                     )
                   ) : (
-                    <span className={`text-sm ${textMuted}`}>
-                      📅 出産日(予定日)を設定する
-                    </span>
+                    <span className={`text-sm ${textMuted}`}>📅 出産日(予定日)を設定する</span>
                   )}
                 </button>
               ) : (
                 <div className={`mt-2 mb-2 p-3 rounded-xl shadow-sm ${darkMode ? "bg-gray-800" : "bg-white"}`}>
-                  <label className={`text-xs block mb-2 ${textMuted}`}>
-                    出産日(予定日)を入力 ※ 予防接種の月齢計算にも使われます
-                  </label>
+                  <label className={`text-xs block mb-2 ${textMuted}`}>出産日(予定日)を入力</label>
                   <div className="flex gap-2">
                     <input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className={`flex-1 px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${inputClass}`}
+                      className={`block flex-1 min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${inputClass}`}
                     />
                     <button
                       onClick={() => saveDueDate(dueDate)}
@@ -509,34 +498,24 @@ export default function App() {
                     placeholder="アイテム名・メモで検索"
                     className={`w-full pl-9 pr-9 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${inputClass}`}
                   />
-                  {searchKeyword && (
-                    <button
-                      onClick={() => setSearchKeyword("")}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 ${textMuted} hover:text-gray-600`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <select
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
-                    className={`px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
+                    className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
                   >
-                    <option value="すべて">📁 すべてのカテゴリ</option>
+                    <option value="すべて">📁 すべて</option>
                     {categories.map((cat) => (
-                      <option key={cat.id} value={cat.name}>
-                        {cat.emoji} {cat.name}
-                      </option>
+                      <option key={cat.id} value={cat.name}>{cat.emoji} {cat.name}</option>
                     ))}
                   </select>
                   <select
                     value={filterPriority}
                     onChange={(e) => setFilterPriority(e.target.value)}
-                    className={`px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
+                    className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
                   >
-                    <option value="すべて">⭐ すべての優先度</option>
+                    <option value="すべて">⭐ すべて</option>
                     <option value="高">🔴 優先度:高</option>
                     <option value="中">🟡 優先度:中</option>
                     <option value="低">🟢 優先度:低</option>
@@ -562,18 +541,16 @@ export default function App() {
                   <select
                     value={newItemCategory}
                     onChange={(e) => setNewItemCategory(e.target.value)}
-                    className={`px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
+                    className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
                   >
                     {categories.map((cat) => (
-                      <option key={cat.id} value={cat.name}>
-                        {cat.emoji} {cat.name}
-                      </option>
+                      <option key={cat.id} value={cat.name}>{cat.emoji} {cat.name}</option>
                     ))}
                   </select>
                   <select
                     value={newItemPriority}
                     onChange={(e) => setNewItemPriority(e.target.value)}
-                    className={`px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
+                    className={`block w-full min-w-0 box-border appearance-none px-3 py-2 border rounded-lg text-base ${darkMode ? "bg-gray-700 border-gray-600 text-gray-100" : "bg-white border-gray-200"}`}
                   >
                     <option value="高">優先度:高</option>
                     <option value="中">優先度:中</option>
@@ -582,7 +559,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={addItem}
-                  className="w-full py-2 bg-gradient-to-r from-pink-300 to-purple-300 text-white rounded-lg font-semibold text-sm hover:from-pink-400 hover:to-purple-400 transition-all shadow-sm"
+                  className="w-full py-2 bg-gradient-to-r from-pink-300 to-purple-300 text-white rounded-lg font-semibold text-sm shadow-sm"
                 >
                   ＋ リストに追加
                 </button>
@@ -605,12 +582,12 @@ export default function App() {
                     value={newCategoryName}
                     onChange={(e) => setNewCategoryName(e.target.value)}
                     placeholder="例:お風呂用品"
-                    className={`w-full px-3 py-2 border rounded-lg mb-2 text-base focus:outline-none focus:ring-2 focus:ring-pink-200 ${inputClass}`}
+                    className={`w-full px-3 py-2 border rounded-lg mb-2 text-base ${inputClass}`}
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => { setIsAddingCategory(false); setNewCategoryName(""); }}
-                      className={`py-2 rounded-lg text-sm font-semibold transition-all ${darkMode ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                      className={`py-2 rounded-lg text-sm font-semibold ${darkMode ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-600"}`}
                     >
                       キャンセル
                     </button>
@@ -640,13 +617,11 @@ export default function App() {
                     <h2 className={`text-sm font-bold flex items-center gap-2 ${style.text}`}>
                       <span className="text-lg">{style.emoji}</span>
                       {category.name}
-                      <span className={`text-xs font-normal ${textMuted}`}>
-                        ({catCheckedCount} / {catTotalCount})
-                      </span>
+                      <span className={`text-xs font-normal ${textMuted}`}>({catCheckedCount} / {catTotalCount})</span>
                     </h2>
                     <button
                       onClick={() => deleteCategory(category.id, category.name)}
-                      className={`text-xs p-1 rounded transition-all ${darkMode ? "text-gray-600 hover:text-rose-400" : "text-gray-300 hover:text-rose-400"}`}
+                      className={`text-xs p-1 rounded ${darkMode ? "text-gray-600 hover:text-rose-400" : "text-gray-300 hover:text-rose-400"}`}
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -677,7 +652,7 @@ export default function App() {
                             className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                               item.checked
                                 ? "bg-gradient-to-br from-pink-300 to-purple-300 border-transparent"
-                                : (darkMode ? "bg-gray-700 border-gray-500 hover:border-pink-400" : "bg-white border-gray-300 hover:border-pink-300")
+                                : (darkMode ? "bg-gray-700 border-gray-500" : "bg-white border-gray-300")
                             }`}
                           >
                             {item.checked && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
@@ -709,13 +684,13 @@ export default function App() {
                           </div>
                           <button
                             onClick={() => setEditingItemId(editingItemId === item.id ? null : item.id)}
-                            className={`flex-shrink-0 p-2 rounded-lg transition-all ${darkMode ? "text-gray-400 hover:text-purple-400 hover:bg-gray-700" : "text-gray-400 hover:text-purple-500 hover:bg-purple-50"}`}
+                            className={`flex-shrink-0 p-2 rounded-lg ${darkMode ? "text-gray-400 hover:text-purple-400 hover:bg-gray-700" : "text-gray-400 hover:text-purple-500 hover:bg-purple-50"}`}
                           >
                             <Tag className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteItem(item.id)}
-                            className={`flex-shrink-0 p-2 rounded-lg transition-all ${darkMode ? "text-gray-500 hover:text-rose-400 hover:bg-gray-700" : "text-gray-300 hover:text-rose-400 hover:bg-rose-50"}`}
+                            className={`flex-shrink-0 p-2 rounded-lg ${darkMode ? "text-gray-500 hover:text-rose-400 hover:bg-gray-700" : "text-gray-300 hover:text-rose-400 hover:bg-rose-50"}`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -726,14 +701,12 @@ export default function App() {
                               <label className={`text-xs block mb-1 ${textMuted}`}>💰 値段(円)</label>
                               <input type="number" value={item.price || ""}
                                 onChange={(e) => updateItemDetail(item.id, "price", e.target.value)}
-                                placeholder="例: 3980"
                                 className={`w-full px-3 py-1.5 border rounded-lg text-base ${inputClass}`} />
                             </div>
                             <div>
                               <label className={`text-xs block mb-1 ${textMuted}`}>🔗 購入サイトURL</label>
                               <input type="url" value={item.url || ""}
                                 onChange={(e) => updateItemDetail(item.id, "url", e.target.value)}
-                                placeholder="https://..."
                                 className={`w-full px-3 py-1.5 border rounded-lg text-base ${inputClass}`} />
                             </div>
                             <div>
@@ -755,7 +728,7 @@ export default function App() {
         )}
       </div>
 
-      {/* ☰ ハンバーガーメニュー(オーバーレイ) */}
+      {/* ☰ ハンバーガーメニュー */}
       {menuOpen && (
         <div
           className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
@@ -769,7 +742,7 @@ export default function App() {
               <h2 className={`text-lg font-bold ${textPrimary}`}>メニュー</h2>
               <button
                 onClick={() => setMenuOpen(false)}
-                className={`p-2 rounded-full transition-all ${darkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-600"}`}
+                className={`p-2 rounded-full ${darkMode ? "hover:bg-gray-700 text-gray-300" : "hover:bg-gray-100 text-gray-600"}`}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -797,7 +770,7 @@ export default function App() {
             <div className={`border-t p-2 ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
               <button
                 onClick={handleUserChange}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${darkMode ? "text-gray-300 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl ${darkMode ? "text-gray-300 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-100"}`}
               >
                 <UserCircle className="w-5 h-5 flex-shrink-0" />
                 <span className="text-sm font-semibold">ユーザー切替</span>
@@ -807,19 +780,19 @@ export default function App() {
         </div>
       )}
 
-      {/* 📱 ボトムナビ(4タブ) */}
+      {/* 📱 ボトムナビ(4タブ: 手続き/成長/予防接種/メモ) */}
       <nav className={`fixed bottom-0 left-0 right-0 border-t shadow-lg z-40 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
         <div className="grid grid-cols-4 max-w-md mx-auto">
           <button
-            onClick={() => setCurrentPage("temperature")}
+            onClick={() => setCurrentPage("procedures")}
             className={`py-3 px-1 flex flex-col items-center gap-0.5 transition-all ${
-              currentPage === "temperature"
+              currentPage === "procedures"
                 ? (darkMode ? "text-rose-400 bg-gray-700" : "text-rose-500 bg-rose-50")
                 : (darkMode ? "text-gray-500 hover:text-gray-300" : "text-gray-400 hover:text-gray-600")
             }`}
           >
-            <Thermometer className="w-5 h-5" />
-            <span className="text-[10px] font-semibold">体温</span>
+            <ClipboardList className="w-5 h-5" />
+            <span className="text-[10px] font-semibold">手続き</span>
           </button>
           <button
             onClick={() => setCurrentPage("growth")}
@@ -857,7 +830,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* アニメーション用CSS */}
       <style>{`
         @keyframes slide-in {
           from { transform: translateX(100%); }
